@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content%}
+
+<ul>
+
+
+{% if posts %}
+
+	<h3> {{ posts.0.author.first_name}} 
+	{{ posts.0.author.last_name}}'s Blog  </h3>	
+
+		 <form action = "{% url 'search_sp' posts.0.author.id %}" method ="get">
+        <input type="text" name ="search" placeholder="Search tag in this blog" /> <button type = "submit">Search</button>
+      </form>
+
+
+
+	{% for post in posts %}
+
+	<li><a href="{% url 'article-detail' post.pk %}">{{ post.title}}</a> -
+	<a href ="{% url 'blogs' post.author.id %}">{{ post.author.first_name}} 
+		{{ post.author.last_name}}</a> -
+	{{ post.post_date}}  <small> 
+
+		{% if user.is_authenticated %}
+			{% if user.id == post.author.id %}
+				- <a href ="{% url 'update_post' post.pk %}">(Edit)</a>
+		   	 	- <a href ="{% url 'delete_post' post.pk %}">(Delete)</a> 
+		    {% endif %}
+		{% endif %}
+
+		 <br/>
+
+		{% if post.tags.all.count %}
+		    <div class="tags">
+		        <small>Tags: </small>
+		        {% for tag in post.tags.all %}
+		           <a href="{% url 'tags' tag %}" class="mr-1 badge badge-info bg-dark">{{ tag }}</a>
+		        {% endfor %}
+		    </div>
+		{% endif %}
+
+		</small>
+		{{ post.body|safe|slice:":200"}} </li>
+
+	{% endfor %}
+	
+	<h5></h5>
+	{% endif %}
+
+</ul>
+ {% endblock %}
+
